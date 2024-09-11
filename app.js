@@ -13,16 +13,16 @@ const conexaoPostgres = new Client({
 async function realizaConexaoPostgres(){
     try{
         await conexaoPostgres.connect();
-        console.log("conectou");
+        console.log("Conexão com o PostgreSQL estabelecida.\n");
     }
     catch(error){
-        console.log(error);
+        console.log(`Erro ao realizar conexão com o banco PostgreSQL: ${error}`);
     }
 }
 
 async function fechaConexaoPostgres(){
     await conexaoPostgres.end();
-    console.log("Conexão com o PostgreSQL encerrada");
+    console.log("Conexão com o PostgreSQL encerrada\n");
 }
 
 async function inserirPessoa({documento, telefones, primeiro_nome, sobrenome}){
