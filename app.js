@@ -1,6 +1,25 @@
 const {Client} = require("pg");
 
-console.log("passou");
+const arrayPessoasInsert = [
+    {
+        documento: "10022479",
+        telefones: ["74999250794","79981396317"],
+        primeiro_nome: "Arnaldo",
+        sobrenome: "Cesar Coelho",
+    },
+    {
+        documento: "82141320",
+        telefones: ["79981396317"],
+        primeiro_nome: "Beto",
+        sobrenome: "Carreiro",
+    },
+    {
+        documento: "28741450",
+        telefones: ["74999250794"],
+        primeiro_nome: "Capitão",
+        sobrenome: "America",
+    }
+]
 
 const conexaoPostgres = new Client({
     host: 'localhost',
@@ -29,7 +48,7 @@ async function inserirPessoa({documento, telefones, primeiro_nome, sobrenome}){
     const sql_insert = 'INSERT INTO Pessoa (documento, telefones, primeiro_nome, sobrenome) VALUES ($1,$2,$3,$4)';
     try{
         await conexaoPostgres.query(sql_insert, [documento, telefones, primeiro_nome, sobrenome]);
-        console.log(`Pessoa ${documento, telefones, primeiro_nome, sobrenome} criado com sucesso`);
+        console.log(`Pessoa -> ${documento}-${telefones}-${primeiro_nome}-${sobrenome} criado com sucesso`);
     }
     catch(errorInsert){
         console.log(`Error ao realizar insert: ${errorInsert}`);
@@ -44,10 +63,7 @@ async function getAllPessoas(){
 }
 
 realizaConexaoPostgres();
-inserirPessoa({
-    documento: "12345678",
-    telefones: [123,132],
-    primeiro_nome: "itor",
-    sobrenome: "carlos"
-});
+
+arrayPessoasInsert.forEach(pessoa => inserirPessoa(pessoa));
+
 getAllPessoas();
