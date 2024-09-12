@@ -2,7 +2,7 @@ const { Client } = require("pg");
 
 const arrayPessoasInsert = [
     {
-        documento: "10022479",
+        documento: "1002247913123",
         telefones: ["74999250794", "79981396317"],
         primeiro_nome: "Arnaldo",
         sobrenome: "Cesar Coelho",
@@ -51,18 +51,36 @@ async function fechaConexaoPostgres() {
     console.log("Conexão com o PostgreSQL encerrada\n");
 }
 
-async function inserirPessoa({ documento, telefones, primeiro_nome, sobrenome }) {
+async function inserirPessoa(array) {
     await conexaoPostgres.query('BEGIN');
-    const sql_insert = 'INSERT INTO Pessoa (documento, telefones, primeiro_nome, sobrenome) VALUES ($1,$2,$3,$4)';
+
+    let sql_insert = 'INSERT INTO Pessoa (documento, telefones, primeiro_nome, sobrenome) VALUES ';
+    let valoresPessoa = [];
+    let contadorPessoa = 1;
+
+    array.forEach((pessoa, index) => {
+        const { documento, telefones, primeiro_nome, sobrenome } = pessoa;
+
+        sql_insert += `($${contadorPessoa}, $${contadorPessoa+1}, $${contadorPessoa+2}, $${contadorPessoa+3})`;
+        if (index < array.length - 1) {
+            sql_insert += ', ';
+        }
+
+        valoresPessoa.push(documento, telefones, primeiro_nome, sobrenome);
+        contadorPessoa += 4;
+    });
+
     try {
-        await conexaoPostgres.query(sql_insert, [documento, telefones, primeiro_nome, sobrenome]);
-        console.log(`Pessoa -> ${documento}-${telefones}-${primeiro_nome}-${sobrenome} criado com sucesso`);
+        await conexaoPostgres.query(sql_insert, valoresPessoa);
+        
         await conexaoPostgres.query('COMMIT');
+        array.forEach(pessoa => console.log(`Pessoa -> ${pessoa.documento}-${pessoa.telefones}-${pessoa.primeiro_nome}-${pessoa.sobrenome} criado com sucesso`));
     } catch (errorInsert) {
         await conexaoPostgres.query('ROLLBACK');
-        console.log(`Error ao realizar insert: ${errorInsert}`);
+        console.log(`Erro ao realizar insert: ${errorInsert}`);
     }
 }
+
 
 async function getAllPessoas() {
     const sql_select = 'SELECT * FROM Pessoa;';
@@ -74,9 +92,7 @@ async function getAllPessoas() {
 async function main() {
     await realizaConexaoPostgres();
 
-    for (const pessoa of arrayPessoasInsert) {
-        await inserirPessoa(pessoa);
-    }
+    inserirPessoa(arrayPessoasInsert);
 
     await getAllPessoas();
 }
