@@ -2,7 +2,7 @@ const { Client } = require("pg");
 
 const arrayPessoasInsert = [
     {
-        documento: "1002247913123",
+        documento: "10022479",
         telefones: ["74999250794", "79981396317"],
         primeiro_nome: "Arnaldo",
         sobrenome: "Cesar Coelho",
@@ -22,11 +22,14 @@ const arrayPessoasInsert = [
 ];
 
 const conexaoPostgres = new Client({
-    host: 'localhost',
+    host: 'databaseufs.cxcqkp3h7gwq.us-east-1.rds.amazonaws.com',
     port: 5432,
-    user: "root",
-    password: "root",
-    database: "projeto_logico"
+    user: "aluno",
+    password: "alunoufs",
+    database: "dbUFS",
+    ssl: {
+        rejectUnauthorized: false,
+    }
 });
 
 async function realizaConexaoPostgres() {
@@ -35,10 +38,11 @@ async function realizaConexaoPostgres() {
 
         await conexaoPostgres.query(`
             CREATE TABLE IF NOT EXISTS Pessoa (
-                documento VARCHAR(50) PRIMARY KEY,
-                telefones TEXT[],
-                primeiro_nome VARCHAR(100),
-                sobrenome VARCHAR(100)
+                documento INT NOT NULL,
+                telefones VARCHAR(45)[] NOT NULL,
+                primeiro_nome VARCHAR(45) NOT NULL,
+                sobrenome VARCHAR(45) NOT NULL,
+                PRIMARY KEY (documento)
             );
         `);
     } catch (error) {
